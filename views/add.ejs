@@ -1,0 +1,67 @@
+<%- include("partials/header") %>
+<body>
+  <div class="container">
+    <h1>Add a New Book</h1>
+
+    <form action="/add" method="POST">
+        <label>ISBN:</label>
+        <input type="text" id="isbn" />
+      
+        <button type="button" onclick="fetchBook()">Lookup</button>
+      
+        <label>Title:</label>
+        <input type="text" name="title" id="title" required />
+      
+        <label>Author:</label>
+        <input type="text" name="author" id="author" required />
+      
+        <label>Rating (1–10):</label>
+        <input type="number" name="rating" min="1" max="10" required />
+      
+        <label>Date Read:</label>
+        <input type="date" name="date_read" required />
+      
+        <label>Cover ID:</label>
+        <input type="text" name="cover_id" id="cover_id" />
+      
+        <label>Notes:</label>
+        <textarea name="notes"></textarea>
+      
+        <button type="submit">Add Book</button>
+      </form>      
+
+    <a href="/">← Back to Book List</a>
+  </div>
+
+
+  <%- include("partials/footer") %>
+
+
+  <script>
+    async function fetchBook() {
+      const isbn = document.getElementById("isbn").value.trim();
+      if (!isbn) return;
+  
+      const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`;
+  
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const bookData = data[`ISBN:${isbn}`];
+  
+        if (!bookData) {
+          alert("Book not found!");
+          return;
+        }
+  
+        document.getElementById("title").value = bookData.title || "";
+        document.getElementById("author").value = bookData.authors?.[0]?.name || "";
+        document.getElementById("cover_id").value = bookData.cover?.medium?.match(/b\/id\/(\d+)-/)?.[1] || "";
+  
+      } catch (err) {
+        console.error("Error fetching book:", err);
+        alert("Failed to fetch book details.");
+      }
+    }
+  </script>
+

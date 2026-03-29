@@ -1,0 +1,42 @@
+<%- include("partials/header") %>
+
+      <form method="get" action="/" class="sort-form">
+        <label for="sort">Sort by:</label>
+        <select name="sort" id="sort" onchange="this.form.submit()">
+          <option value="date_read">Date Read</option>
+          <option value="title">Title</option>
+          <option value="rating">Rating</option>
+        </select>
+      </form>
+      
+  
+  <div class="container">
+    <h1>Books</h1>
+    <% books.forEach(book => { %>
+        <div class="book">
+          <h2><%= book.title %></h2>
+          <p>Author: <%= book.author %></p>
+          <p>Rating: <%= book.rating %></p>
+          <p>Date Read: <%= book.date_read.toISOString().split('T')[0] %></p>
+          <p>Cover id: <%= book.cover_id %></p>
+          <p>Notes: <%= book.notes %></p>
+          <img src="https://covers.openlibrary.org/b/id/<%= book.cover_id %>-M.jpg" alt="Cover">
+      
+          <a href="/edit/<%= book.id %>">Edit</a>
+          <form action="/delete/<%= book.id %>" method="POST" style="display:inline;" class="delete">
+            <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+          </form>
+        </div>
+      <% }) %>      
+  </div>
+
+  <%- include("partials/footer") %>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const currentSort = params.get("sort");
+    if (currentSort) {
+      document.getElementById("sort").value = currentSort;
+    }
+  </script>
+  
+
